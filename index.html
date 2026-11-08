@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payoff-Rechner – Capped Bonus Outperformance Zertifikat auf Zurich Insurance</title>
+<meta name="description" content="Rechnen Sie Ihr Szenario: Rückzahlung des Capped Bonus Outperformance Zertifikats auf Zurich Insurance Group AG je nach Kurs bei Verfall.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0e2841; --ink:#1f2933; --muted:#5b6675; --line:#dfe2e8; --bg:#ffffff; --surface:#f6f4ef; --grid:#e9ecf0;
+  --gold:#c99a3e; --golddk:#8a6516; --goldlt:#f7eed9;
+  --green:#2f7d4f; --greenlt:#e8f2eb; --red:#b23b3b; --redlt:#f8e7e7; --grey:#9aa3af; --greylt:#f1f2f4;
+  --serif:"Source Serif 4",Caladea,Cambria,Georgia,serif; --sans:Lato,Carlito,Calibri,"Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.45}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+.num{font-variant-numeric:tabular-nums}
+h1,h2,h3{font-family:var(--serif);color:var(--navy);font-weight:600;line-height:1.15;margin:0}
+h1{font-size:clamp(24px,5.2vw,32px)}
+h2{font-size:clamp(21px,4.4vw,26px)}
+h3{font-size:17px}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+a{color:var(--navy)}
+
+/* Kopf */
+header{border-bottom:1px solid var(--line);padding:18px 0 16px}
+.brand{display:flex;align-items:center;gap:12px}
+.mono{width:44px;height:44px;flex:none;background:var(--navy);border:1.5px solid var(--gold);color:#e8be72;font-family:var(--serif);font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center;letter-spacing:.02em}
+.wm b{display:block;font-family:var(--serif);font-size:17px;letter-spacing:.14em;color:var(--navy);font-weight:600}
+.wm span{display:block;font-size:10.5px;font-weight:700;letter-spacing:.2em;color:var(--golddk)}
+.product{margin-top:18px}
+.product .sub{font-size:14px;color:var(--muted);margin-top:4px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:16px}
+@media(max-width:560px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{background:var(--surface);padding:10px 12px}
+.kpi b{display:block;font-family:var(--serif);font-size:22px;color:var(--navy);font-weight:600;line-height:1.1}
+.kpi span{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
+
+/* Einstellungen */
+.settings{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 0;border-bottom:1px solid var(--line)}
+@media(max-width:560px){.settings{grid-template-columns:1fr}}
+label.lab{display:block;font-weight:700;font-size:13.5px;margin-bottom:6px}
+.inrow{display:flex;align-items:center;gap:8px}
+input[type=number],input[type=text]{font:inherit;font-variant-numeric:tabular-nums;padding:9px 10px;border:1px solid var(--line);background:#fff;color:var(--ink);width:100%;min-width:0;border-radius:0}
+input[type=number]{-moz-appearance:textfield}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:7px 11px;border:1px solid var(--line);background:#fff;color:var(--ink);font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;min-height:36px}
+.chip[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+.hint{font-size:13px;color:var(--muted);margin-top:6px}
+
+/* Abschnitte */
+section.block{padding:28px 0;border-bottom:1px solid var(--line)}
+section.block>p.lead{margin-top:6px;color:var(--muted)}
+.ctl{margin-top:18px}
+.ctl .lab{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.ctl .lab output{font-weight:700;color:var(--navy)}
+
+/* Regler */
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;margin:0;padding:0}
+input[type=range]::-webkit-slider-runnable-track{height:6px;background:var(--line);border-radius:3px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:var(--navy);border:3px solid #fff;box-shadow:0 0 0 1.5px var(--navy);margin-top:-12px;cursor:pointer}
+input[type=range]::-moz-range-track{height:6px;background:var(--line);border-radius:3px}
+input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:var(--navy);border:3px solid #fff;box-shadow:0 0 0 1.5px var(--navy);cursor:pointer}
+input[type=range]:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.scale{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:-6px}
+
+/* Schalter */
+.switch{display:flex;align-items:center;gap:12px;background:none;border:0;padding:6px 0;font:inherit;font-weight:700;font-size:14.5px;color:var(--ink);cursor:pointer;text-align:left;min-height:44px}
+.sw{width:46px;height:26px;border-radius:13px;background:var(--line);position:relative;flex:none;transition:background .15s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .15s}
+.switch[aria-checked="true"] .sw{background:var(--red)}
+.switch[aria-checked="true"] .sw::after{left:23px}
+.switch[disabled]{cursor:default}
+.switch[disabled] span.t{color:var(--muted)}
+
+/* Resultat */
+.result{margin-top:18px;background:var(--navy);color:#fff;padding:18px 20px}
+.result .k{font-size:12px;letter-spacing:.14em;font-weight:700;color:#e8be72}
+.result .v{font-family:var(--serif);font-size:clamp(34px,8vw,48px);font-weight:600;line-height:1.05;margin-top:6px}
+.result .s{font-size:15px;color:#c9d3e3;margin-top:4px}
+.result .scen{margin-top:10px;font-size:14.5px;display:flex;gap:8px;align-items:center}
+.result .scen .dot{width:10px;height:10px;border-radius:50%;background:#c9d3e3;flex:none}
+.result .scen.hit .dot{background:#ef8a8a}
+
+/* Diagramme */
+.chart{margin-top:18px;border:1px solid var(--line);padding:8px 6px 4px;background:#fff}
+.chart svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:10px 16px;font-size:12.5px;color:var(--muted);padding:6px 8px 4px}
+.legend i{display:inline-block;width:22px;height:0;border-top:3px solid;vertical-align:middle;margin-right:6px}
+svg .ax{font:11px var(--sans);fill:var(--muted)}
+svg .axl{font:11.5px var(--sans);fill:var(--muted)}
+svg .lbl{font:11px var(--sans);font-weight:700;paint-order:stroke;stroke:#fff;stroke-width:3.5px;stroke-linejoin:round}
+svg .val{font:13px var(--sans);font-weight:700;fill:var(--navy);paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
+svg .ax,svg .axl{paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+
+/* Vergleich */
+.cmp{margin-top:22px}
+.cmp h3{margin-bottom:4px}
+.bars{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+.bar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;font-size:14.5px}
+.bar .name{font-weight:700}
+.bar .name small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+.bar .track{grid-column:1/-1;height:18px;background:var(--surface);position:relative}
+.bar .fill{position:absolute;left:0;top:0;bottom:0;background:var(--grey)}
+.bar.best .fill{background:var(--gold)}
+.bar.cert .fill{background:var(--navy)}
+.bar.cert.best .fill{background:var(--gold)}
+.bar .need{position:absolute;top:-4px;bottom:-4px;width:0;border-left:2px dashed var(--navy)}
+.bar b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar.best b{color:var(--golddk)}
+.cmpnote{margin-top:10px;font-size:13px;color:var(--muted)}
+
+/* Barriere */
+.paths{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+@media(max-width:560px){.paths{grid-template-columns:1fr}}
+.pathcard{padding:12px 14px;background:var(--surface);border-left:4px solid var(--navy)}
+.pathcard.hit{border-left-color:var(--red)}
+.pathcard b{display:block;font-family:var(--serif);font-size:22px;color:var(--navy)}
+.pathcard.hit b{color:var(--red)}
+.pathcard span{display:block;font-size:13px;color:var(--muted)}
+.pathcard .n{font-weight:700;font-size:14px;color:var(--ink)}
+
+
+.minis{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:12px;font-size:14px}
+.minis span b{font-weight:700}
+
+/* Details */
+details{border-top:1px solid var(--line)}
+details:last-of-type{border-bottom:1px solid var(--line)}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:16px 0;font-family:var(--serif);font-size:19px;font-weight:600;color:var(--navy)}
+summary::-webkit-details-marker{display:none}
+details > summary::after{content:"+";font-family:var(--sans);font-size:22px;color:var(--golddk);font-weight:400;margin-left:12px}
+details[open] > summary::after{content:"−"}
+summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.dbody{padding:0 0 22px}
+details.inner{border:0;margin-top:12px}
+details.inner summary{font-family:var(--sans);font-size:14px;font-weight:700;padding:8px 0;color:var(--ink)}
+details.inner summary::after{font-size:18px}
+
+.wf{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.wf .row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;font-size:14.5px;align-items:center}
+.wf .row .track{grid-column:1/-1;height:16px;background:var(--surface);position:relative}
+.wf .row .fill{position:absolute;top:0;bottom:0;background:var(--grey)}
+.wf .row.base .fill{background:var(--navy)}
+.wf .row.total .fill{background:var(--navy)}
+.wf .row.total{font-weight:700;border-top:1px solid var(--line);padding-top:8px}
+.wf .row b{font-variant-numeric:tabular-nums;white-space:nowrap}
+
+.formula{background:var(--surface);padding:14px 16px;font-size:15px;line-height:1.7;margin-top:12px;overflow-x:auto}
+.formula var{font-style:italic;font-family:var(--serif)}
+.formula .ind{display:block;padding-left:18px}
+.live{margin-top:12px;padding:14px 16px;border:1px solid var(--line);font-size:15px;line-height:1.7}
+.live b{color:var(--navy)}
+.steps{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px}
+.step{display:grid;grid-template-columns:40px 1fr;gap:12px;background:var(--surface);padding:14px 16px}
+.step .n{width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:15px}
+.step h4{margin:4px 0 4px;font-family:var(--sans);font-size:14.5px;color:var(--muted);font-weight:700}
+.step p{font-size:16px;line-height:1.5}
+.step p b{color:var(--navy);font-family:var(--serif);font-size:19px}
+.step.hit .n{background:var(--red)}
+.step.hit p b{color:var(--red)}
+
+ul.plain{margin:10px 0 0;padding-left:18px;font-size:14.5px}
+ul.plain li{margin:4px 0}
+
+footer{padding:22px 0 40px;font-size:13px;color:var(--muted);line-height:1.6}
+footer b{color:var(--ink)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="brand" aria-label="Whitmore & Crane, Private Banking Zürich">
+    <div class="mono" aria-hidden="true">W&amp;C</div>
+    <div class="wm"><b>WHITMORE &amp; CRANE</b><span>PRIVATE BANKING | ZÜRICH</span></div>
+  </div>
+  <div class="product">
+    <h1>Capped Bonus Outperformance Zertifikat auf Zurich Insurance Group AG</h1>
+    <p class="sub">Payoff-Rechner zum Termsheet. Startkurs CHF 588.20, Kurs bei Abschluss am 13.10.2026.</p>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><b class="num">210.2&nbsp;%</b><span>Partizipation bis zum Cap</span></div>
+    <div class="kpi"><b class="num">75&nbsp;%</b><span>Barriere, CHF 441.15</span></div>
+    <div class="kpi"><b class="num">130&nbsp;%</b><span>Cap, CHF 764.66</span></div>
+    <div class="kpi"><b>12.10.2028</b><span>Laufzeit bis, Verfall</span></div>
+  </div>
+</header>
+
+<section class="settings" aria-label="Ihre Angaben">
+  <div>
+    <label class="lab" for="amt">Anlagebetrag in CHF</label>
+    <input id="amt" type="number" inputmode="numeric" min="588" step="1000" value="2000000">
+    <p class="hint" id="certs"></p>
+  </div>
+  <div>
+    <label class="lab" for="taxin">Ihr Grenzsteuersatz</label>
+    <div class="inrow">
+      <div class="chips" id="taxchips" role="group" aria-label="Schnellwahl Grenzsteuersatz"></div>
+      <input id="taxin" type="number" inputmode="numeric" min="0" max="60" step="1" value="40" style="width:76px;flex:none" aria-label="Grenzsteuersatz in Prozent">
+    </div>
+    <p class="hint">Für die Dividende der Aktie im Vergleich. Der Ertrag des Zertifikats ist für Privatanleger ein steuerfreier Kapitalgewinn.</p>
+  </div>
+</section>
+
+<!-- 1 Rückzahlung -->
+<section class="block" id="s-payoff">
+  <h2>Was erhalten Sie im Oktober 2028?</h2>
+  <p class="lead">Wählen Sie den Schlusskurs von Zurich am 12.10.2028. Die Rückzahlung erfolgt am 19.10.2028 in CHF.</p>
+
+  <div class="ctl">
+    <label class="lab" for="px"><span>Kurs Zurich bei Verfall</span><output id="pxo" for="px" class="num"></output></label>
+    <input id="px" type="range" min="50" max="170" step="1" value="115" aria-describedby="pxo">
+    <div class="scale" aria-hidden="true"><span>−50 %</span><span>Startkurs</span><span>+70&nbsp;%</span></div>
+    <div class="chips" id="presets" role="group" aria-label="Szenarien aus dem Termsheet" style="margin-top:10px"></div>
+  </div>
+
+  <div class="ctl">
+    <button class="switch" id="hit" role="switch" aria-checked="false" type="button"><span class="sw" aria-hidden="true"></span><span class="t">Barriere während der Laufzeit berührt</span></button>
+    <p class="hint" id="hithint">Liegt der Kurs bei Verfall auf oder unter CHF 441.15, gilt die Barriere als berührt.</p>
+  </div>
+
+  <div class="result" aria-live="polite">
+    <div class="k">RÜCKZAHLUNG FÜR IHRE POSITION</div>
+    <div class="v num" id="rchf"></div>
+    <div class="s num" id="rpct"></div>
+    <div class="scen" id="rscen"><span class="dot" aria-hidden="true"></span><span id="rscent"></span></div>
+  </div>
+
+  <div class="chart">
+    <svg id="ch1" role="img" aria-label="Auszahlungsprofil: Rückzahlung in Prozent des Nominals je nach Kurs von Zurich bei Verfall"></svg>
+    <div class="legend">
+      <span><i style="border-color:var(--navy)"></i>Zertifikat, Barriere nie berührt</span>
+      <span><i style="border-color:var(--red)"></i>Zertifikat, Barriere berührt</span>
+      <span><i style="border-color:var(--grey);border-top-style:dashed"></i>Aktie ohne Dividende</span>
+    </div>
+  </div>
+
+  <div class="cmp">
+    <h3>Vergleich nach Steuern bei diesem Kurs</h3>
+    <p class="small muted">Gleicher Betrag, gleiche zwei Jahre. Die gestrichelte Linie ist Ihr Anlagebetrag.</p>
+    <div class="bars" id="bars"></div>
+    <p class="cmpnote" id="cmpnote"></p>
+  </div>
+</section>
+
+<!-- 2 Barriere -->
+
+
+<!-- 4 Aufklappbare Bereiche -->
+<section style="padding:10px 0 0">
+  <details id="d-barrier">
+    <summary>Was bedeutet die Barriere?</summary>
+    <div class="dbody">
+      <p class="small muted">Zwei Verläufe mit demselben Schlusskurs von −10&nbsp;%. Nur der Weg dorthin unterscheidet sich.</p>
+    <div class="chart">
+      <svg id="ch2" role="img" aria-label="Zwei Kursverläufe mit gleichem Endkurs, einer berührt die Barriere"></svg>
+      <div class="legend">
+        <span><i style="border-color:var(--navy)"></i>Verlauf A, Barriere nie berührt</span>
+        <span><i style="border-color:var(--red)"></i>Verlauf B, Barriere berührt</span>
+        <span><i style="border-color:var(--red);border-top-style:dashed"></i>Barriere CHF 441.15</span>
+      </div>
+    </div>
+    <div class="paths">
+      <div class="pathcard"><b class="num" id="pa"></b><span class="n">Verlauf A</span><span id="pat"></span></div>
+      <div class="pathcard hit"><b class="num" id="pb"></b><span class="n">Verlauf B</span><span id="pbt"></span></div>
+    </div>
+    <p style="margin-top:16px">Fällt Zurich während der Laufzeit auch nur einmal, auch innerhalb eines Handelstags, auf oder unter CHF 441.15, entfällt der Schutz. Über dem Startkurs erhalten Sie trotzdem die volle Partizipation.</p>
+
+    <details class="inner" id="d-own">
+      <summary>Eigenen Verlauf zeichnen</summary>
+      <div class="dbody" style="padding-bottom:0">
+        <p class="small muted">Ziehen Sie mit Finger oder Maus im Diagramm. Die Barriere zählt an jedem Punkt des Verlaufs.</p>
+        <div class="chart">
+          <svg id="ch2b" role="img" aria-label="Eigener Kursverlauf, zeichenbar"></svg>
+        </div>
+        <div class="minis" id="ownres"></div>
+        <div class="chips" style="margin-top:10px"><button class="chip" type="button" id="ownreset">Zurücksetzen</button></div>
+      </div>
+    </details>
+    </div>
+  </details>
+  <details id="d-value">
+    <summary>Wert vor Verfall</summary>
+    <div class="dbody">
+      <p class="small muted">Die 210.2&nbsp;% gelten erst bei Verfall. Vorher bewegt sich das Zertifikat ähnlich wie die Aktie, weil die enthaltenen Optionen noch Zeitwert haben. Der faire Wert gilt, solange die Barriere bis zum gewählten Tag nicht berührt wurde. Am Emissionstag beträgt er 99&nbsp;%, die Differenz zu 100&nbsp;% sind die Kosten.</p>
+      <div class="ctl">
+        <label class="lab" for="day"><span>Datum</span><output id="dayo" for="day"></output></label>
+        <input id="day" type="range" min="0" max="730" step="1" value="0">
+        <div class="scale" aria-hidden="true"><span>13.10.2026</span><span>12.10.2028</span></div>
+      </div>
+      <div class="ctl">
+        <label class="lab" for="spot"><span>Kurs Zurich an diesem Tag</span><output id="spoto" for="spot" class="num"></output></label>
+        <input id="spot" type="range" min="400" max="900" step="0.5" value="588.2">
+      </div>
+      <div class="result" style="margin-top:14px">
+        <div class="k">FAIRER WERT IHRER POSITION</div>
+        <div class="v num" id="vchf"></div>
+        <div class="s num" id="vpct"></div>
+        <div class="s num" id="vbid"></div>
+        <div class="s num" id="vstock"></div>
+        <div class="s num" id="vmat"></div>
+      </div>
+      <div class="chart">
+        <svg id="ch4" role="img" aria-label="Wert des Zertifikats je nach Kurs, bei Emission, am gewählten Datum und bei Verfall"></svg>
+        <div class="legend">
+          <span><i style="border-color:var(--grey);border-top-style:dashed"></i>Aktie, Kurswert</span>
+          <span><i style="border-color:var(--navy)"></i>Gewähltes Datum</span>
+          <span><i style="border-color:var(--ink);border-top-style:dashed"></i>Bei Verfall</span>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <details id="d-cost">
+    <summary>Kosten und Aufbau</summary>
+    <div class="dbody">
+      <p class="small muted">So setzt sich der Emissionspreis von CHF 588.20 je Zertifikat zusammen. Die Kosten betragen 1&nbsp;% des Nominals und sind im Emissionspreis enthalten.</p>
+      <div class="wf" id="wf"></div>
+      <p class="hint">Skala ab CHF 500, damit die kleineren Bausteine sichtbar sind.</p>
+    </div>
+  </details>
+
+  <details id="d-formula">
+    <summary>So wird gerechnet</summary>
+    <div class="dbody">
+      <p class="small muted">Drei Schritte, live mit dem oben gewählten Kurs.</p>
+      <div class="steps" id="steps"></div>
+      <details class="inner" id="d-formel">
+        <summary>Formel im Detail</summary>
+      <div class="formula num">
+        <var>x</var> = Schlusskurs am 12.10.2028 ÷ Startkurs CHF 588.20<br>
+        Rückzahlung je Zertifikat, in % des Nominals:<br>
+        <span class="ind">Wenn <var>x</var> ≥ 1: 100&nbsp;% + 210.2&nbsp;% × (min(<var>x</var>; 1.30) − 1), auch wenn die Barriere berührt wurde</span>
+        <span class="ind">Wenn <var>x</var> &lt; 1 und Barriere nie berührt: 100&nbsp;%</span>
+        <span class="ind">Wenn <var>x</var> &lt; 1 und Barriere berührt: <var>x</var></span>
+        Höchstbetrag: 100&nbsp;% + 210.2&nbsp;% × 0.30 = 163.1&nbsp;%, CHF 959.19 je Zertifikat
+      </div>
+      <div class="live num" id="live"></div>
+      </details>
+    </div>
+  </details>
+
+</section>
+
+<footer>
+  <p><b>Emittentin</b> Whitmore &amp; Crane (Switzerland) AG, Zürich, Rating AAA (S&amp;P). Indikative Konditionen per 13.10.2026. Risikoklasse 4 von 7. Barrierenbeobachtung kontinuierlich (intraday) vom 13.10.2026 bis 12.10.2028. Kein Anspruch auf Dividenden. Vergleich mit der Aktie: Dividende rund 5&nbsp;% pro Jahr, als Einkommen steuerbar; vereinfachte Steuerbetrachtung für Privatanleger in der Schweiz, ersetzt keine Steuerberatung. Der Wert vor Verfall ist eine Modellrechnung mit den Parametern bei Emission. Marketingmaterial, massgebend ist das Termsheet.</p>
+</footer>
+
+</div>
+
+<script>
+/* ===== MATH-START ===== */
+const P = {
+  S0: 588.20, BAR: 0.75, CAP: 1.30, PART: 2.1024106, DIV2: 0.10, PUTCOST: 0.136, FIX: 0.0025, T: 2,
+  Q: 0.049938464665991146, R: Math.log(1.00246), VC: 0.20728325, VK: 0.19970440, VP: 0.15586200,
+    BUILD: [["Aktie ohne Dividende, heutiger Wert", 532.29], ["Schutz bis zur Barriere", 22.16], ["Zusatzpartizipation bis zum Cap", 27.87], ["Kosten der Bank, 1\u00a0%", 5.88]]
+};
+function ncdf(x){ const t = 1 / (1 + 0.2316419 * Math.abs(x)); const d = 0.3989422804014327 * Math.exp(-x * x / 2);
+  const p = d * t * (0.319381530 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429)))); return x >= 0 ? 1 - p : p; }
+function call(S, K, v, T){ if (T <= 1e-6) return Math.max(S - K, 0); const s = v * Math.sqrt(T), d1 = (Math.log(S / K) + (P.R - P.Q + v * v / 2) * T) / s, d2 = d1 - s;
+  return S * Math.exp(-P.Q * T) * ncdf(d1) - K * Math.exp(-P.R * T) * ncdf(d2); }
+function dop(S, K, H, v, T){ if (S <= H) return 0; if (T <= 1e-6) return Math.max(K - S, 0);
+  const R = P.R, Q = P.Q, s = v * Math.sqrt(T), d1 = (Math.log(S / K) + (R - Q + v * v / 2) * T) / s, d2 = d1 - s;
+  const put = K * Math.exp(-R * T) * ncdf(-d2) - S * Math.exp(-Q * T) * ncdf(-d1);
+  const lam = (R - Q + v * v / 2) / (v * v);
+  const y = Math.log(H * H / (S * K)) / s + lam * s, x1 = Math.log(S / H) / s + lam * s, y1 = Math.log(H / S) / s + lam * s;
+  const pdi = -S * ncdf(-x1) * Math.exp(-Q * T) + K * Math.exp(-R * T) * ncdf(-x1 + s) + S * Math.exp(-Q * T) * Math.pow(H / S, 2 * lam) * (ncdf(y) - ncdf(y1))
+    - K * Math.exp(-R * T) * Math.pow(H / S, 2 * lam - 2) * (ncdf(y - s) - ncdf(y1 - s));
+  return Math.max(put - pdi, 0); }
+function phit(B, v, T){ const mu = P.R - P.Q - v * v / 2, b = Math.log(B), s = v * Math.sqrt(T);
+  return ncdf((b - mu * T) / s) + Math.exp(2 * mu * b / (v * v)) * ncdf((b + mu * T) / s); }
+/* Rückzahlung in % des Nominals, x = Schlusskurs / Startkurs */
+function payoff(x, hit){ if (x >= 1) return 1 + P.PART * (Math.min(x, P.CAP) - 1); if (x <= P.BAR || hit) return x; return 1; }
+function fairValue(x, T){ if (T <= 1e-6) return payoff(x, false);
+  let v = x * Math.exp(-P.Q * T) + (P.PART - 1) * call(x, 1, P.VC, T) - P.PART * call(x, P.CAP, P.VK, T);
+  if (x > P.BAR) v += dop(x, 1, P.BAR, P.VP, T); return v; }
+const stockAT = (x, N, t) => N * x + N * P.DIV2 * (1 - t);
+const putAT = (x, N, t) => N * Math.max(x, 1) + N * P.DIV2 * (1 - t) - P.PUTCOST * N;
+const cashAT = (N, t) => N * (1 + P.T * P.FIX * (1 - t));
+/* Zufall mit festem Startwert */
+function mulberry32(a){ return function(){ a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+/* ===== MATH-END ===== */
+
+/* ---------- Format und Zustand ---------- */
+const $ = id => document.getElementById(id);
+const S0 = P.S0, START = new Date(2026, 9, 13), END = new Date(2028, 9, 12);
+const sep = s => s.replace(/\B(?=(\d{3})+(?!\d))/g, "'");
+const fmtN = (v, d = 0) => { const neg = v < -1e-12; const a = Math.abs(v).toFixed(d); const [i, f] = a.split("."); return (neg ? "−" : "") + sep(i) + (f ? "." + f : ""); };
+const chf = (v, d = 0) => "CHF " + fmtN(v, d);
+const chfA = v => "CHF " + fmtN(v, Math.abs(v - Math.round(v)) < 0.005 ? 0 : 2);
+const pct = (v, d = 1) => fmtN(v, d) + "\u00a0%";
+const spct = (v, d = 0) => (Math.abs(v) < 0.5 * Math.pow(10, -d) ? "0" : (v > 0 ? "+" : "") + fmtN(v, d)) + "\u00a0%";
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const todayDay = Math.min(730, Math.max(0, Math.round((new Date() - START) / 864e5)));
+const st = { n: 3400, tax: 40, px: 115, hitUser: false, mode: "neutral", exp: 0, vol: 20.7, day: todayDay, spot: 588.2, own: null };
+const nominal = () => st.n * S0;
+const tx = () => st.tax / 100;
+
+/* ---------- SVG-Helfer ---------- */
+function frame(svg, o){ const W = Math.max(300, Math.floor(svg.parentElement.clientWidth) || 300); const H = o.H || Math.round(Math.min(380, Math.max(230, W * 0.6)));
+  const L = o.L || 46, R = o.R || 14, T = o.T || 14, B = o.B || 40;
+  const mx = v => L + (v - o.x0) / (o.x1 - o.x0) * (W - L - R), my = v => H - B - (v - o.y0) / (o.y1 - o.y0) * (H - T - B);
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); return { W, H, L, R, T, B, mx, my, o, narrow: W < 480 }; }
+function axes(f, o){ let s = "";
+  o.yt.forEach(y => { s += `<line x1="${f.L}" x2="${f.W - f.R}" y1="${f.my(y)}" y2="${f.my(y)}" stroke="${css("--grid")}"/><text x="${f.L - 6}" y="${f.my(y) + 4}" text-anchor="end" class="ax">${o.yf(y)}</text>`; });
+  o.xt.forEach(x => { s += `<text x="${f.mx(x)}" y="${f.H - f.B + 16}" text-anchor="middle" class="ax">${o.xf(x)}</text>`; });
+  if (o.xl) s += `<text x="${(f.L + f.W - f.R) / 2}" y="${f.H - 5}" text-anchor="middle" class="axl">${o.xl}</text>`;
+  return s; }
+function poly(f, fn, from, to, step, col, w, dash){ let p = ""; for (let v = from; v <= to + 1e-9; v += step) p += `${f.mx(v).toFixed(1)},${f.my(fn(v)).toFixed(1)} `;
+  return `<polyline fill="none" stroke="${col}" stroke-width="${w}" stroke-linejoin="round" ${dash ? `stroke-dasharray="${dash}"` : ""} points="${p}"/>`; }
+
+/* ---------- Einstellungen ---------- */
+function renderSettings(){
+  $("certs").textContent = `${fmtN(st.n)} Zertifikate zu CHF 588.20, Nominal ${chfA(nominal())}`;
+  [...$("taxchips").children].forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.v === st.tax)));
+  if (document.activeElement !== $("taxin")) $("taxin").value = st.tax;
+}
+(function initSettings(){
+  const tc = $("taxchips");
+  [0, 20, 30, 40].forEach(v => { const b = document.createElement("button"); b.className = "chip"; b.type = "button"; b.dataset.v = v; b.textContent = v + " %"; b.onclick = () => { st.tax = v; renderAll(); }; tc.appendChild(b); });
+  $("amt").oninput = e => { const v = parseFloat(String(e.target.value).replace(/[^\d.]/g, "")); if (v > 0) { st.n = Math.max(1, Math.round(v / S0)); renderAll(); } };
+  $("taxin").oninput = e => { const v = parseFloat(e.target.value); if (v >= 0 && v <= 60) { st.tax = v; renderAll(); } };
+})();
+
+/* ---------- 1 Rückzahlung ---------- */
+const PRESETS = [-30, -20, -10, 0, 10, 20, 30, 40, 60];
+(function init1(){
+  const c = $("presets"); PRESETS.forEach(v => { const b = document.createElement("button"); b.className = "chip"; b.type = "button"; b.dataset.v = v; b.textContent = spct(v); b.onclick = () => { st.px = 100 + v; st.hitUser = false; $("px").value = st.px; render1(); renderLive(); }; c.appendChild(b); });
+  $("px").oninput = e => { st.px = +e.target.value; render1(); renderLive(); };
+  $("hit").onclick = () => { if (st.px / 100 > P.BAR) { st.hitUser = !st.hitUser; render1(); renderLive(); } };
+})();
+function current(){ const x = st.px / 100, forced = x <= P.BAR, hit = forced || st.hitUser, N = nominal(), t = tx(); const p = payoff(x, hit);
+  return { x, hit, forced, N, p, cert: p * N, stock: stockAT(x, N, t), put: putAT(x, N, t), cash: cashAT(N, t) }; }
+function render1(){
+  const r = current(), x = r.x;
+  [...$("presets").children].forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.v === st.px - 100)));
+  $("pxo").textContent = `${spct(st.px - 100)} · ${chf(S0 * x, 2)}`;
+  const sw = $("hit"); sw.setAttribute("aria-checked", String(r.hit)); sw.disabled = r.forced;
+  $("hithint").textContent = r.forced ? "Bei diesem Kurs ist die Barriere berührt. Der Schutz entfällt." : "Liegt der Kurs bei Verfall auf oder unter CHF 441.15, gilt die Barriere als berührt.";
+  $("rchf").textContent = chf(r.cert); $("rpct").textContent = `${pct(r.p * 100)} des Nominals, ${chf(S0 * r.p, 2)} je Zertifikat`;
+  let s, hitCls = false;
+  if (x >= P.CAP) s = "Cap erreicht: Sie erhalten den Höchstbetrag von 163.1\u00a0%.";
+  else if (x >= 1) s = `Zurich steigt um ${spct((x - 1) * 100)}: mit 210.2\u00a0% Partizipation werden daraus ${spct((r.p - 1) * 100, 1)}.`;
+  else if (!r.hit) s = "Zurich fällt, die Barriere hält: Sie erhalten 100\u00a0% des Nominals zurück.";
+  else { s = "Barriere berührt: Rückzahlung wie die Aktie ohne Dividende."; hitCls = true; }
+  $("rscent").textContent = s; $("rscen").classList.toggle("hit", hitCls);
+  draw1(r); renderBars(r);
+}
+function draw1(r){
+  const svg = $("ch1"), f = frame(svg, { x0: 40, x1: 180, y0: 40, y1: 180, L: 44 });
+  const top = f.T, h = f.H - f.T - f.B;
+  let s = `<rect x="${f.mx(40)}" y="${top}" width="${f.mx(75) - f.mx(40)}" height="${h}" fill="${css("--redlt")}"/>`;
+  s += `<rect x="${f.mx(75)}" y="${top}" width="${f.mx(100) - f.mx(75)}" height="${h}" fill="${css("--goldlt")}"/>`;
+  s += `<rect x="${f.mx(100)}" y="${top}" width="${f.mx(130) - f.mx(100)}" height="${h}" fill="${css("--greenlt")}"/>`;
+  s += `<rect x="${f.mx(130)}" y="${top}" width="${f.mx(180) - f.mx(130)}" height="${h}" fill="${css("--greylt")}"/>`;
+  s += axes(f, { yt: [40, 60, 80, 100, 120, 140, 160, 180], yf: v => v + " %", xt: f.narrow ? [50, 75, 100, 130, 160] : [40, 60, 75, 100, 130, 150, 170], xf: v => v + " %", xl: "Kurs Zurich bei Verfall, in % des Startkurses" });
+  s += `<line x1="${f.mx(75)}" x2="${f.mx(75)}" y1="${top}" y2="${top + h}" stroke="${css("--red")}" stroke-dasharray="4 4"/>`;
+  s += `<line x1="${f.mx(130)}" x2="${f.mx(130)}" y1="${top}" y2="${top + h}" stroke="${css("--muted")}" stroke-dasharray="4 4"/>`;
+  s += poly(f, v => v, 40, 180, 1, css("--grey"), 2, "6 5");
+  s += poly(f, v => payoff(v / 100, true) * 100, 40, 180, 1, css("--red"), r.hit ? 4.5 : 3);
+  s += poly(f, v => payoff(v / 100, false) * 100, 75.001, 180, 0.5, css("--navy"), r.hit ? 2 : 4.5).replace("<polyline", `<polyline stroke-opacity="${r.hit ? .35 : 1}"`);
+  s += `<text x="${f.mx(75) + 4}" y="${top + 13}" class="lbl" fill="${css("--red")}">Barriere 75\u00a0%</text>`;
+  s += `<text x="${f.mx(130) + 4}" y="${top + 13}" class="lbl" fill="${css("--muted")}">Cap 130\u00a0%</text>`;
+  s += `<text x="${f.mx(100) + 4}" y="${top + h - 8}" class="lbl" fill="${css("--green")}">Partizipation</text>`;
+  s += `<text x="${f.W - f.R - 4}" y="${f.my(163.07) + 15}" text-anchor="end" class="lbl" fill="${css("--muted")}">Maximum 163.1\u00a0%</text>`;
+  const X = st.px, Y = r.p * 100;
+  s += `<line x1="${f.mx(X)}" x2="${f.mx(X)}" y1="${f.my(Y)}" y2="${top + h}" stroke="${css("--ink")}" stroke-opacity=".35" stroke-dasharray="2 3"/>`;
+  s += `<circle cx="${f.mx(X)}" cy="${f.my(Y)}" r="7" fill="${css("--gold")}" stroke="${css("--navy")}" stroke-width="2"/>`;
+  const lx = Math.min(Math.max(f.mx(X), f.L + 70), f.W - f.R - 70), ly = Y > 150 ? f.my(Y) + 24 : f.my(Y) - 16;
+  s += `<text x="${lx}" y="${ly}" text-anchor="middle" class="val">${pct(Y)} · ${chf(r.cert)}</text>`;
+  svg.innerHTML = s;
+}
+function renderBars(r){
+  const items = [["Zertifikat", "Ertrag steuerfrei", r.cert, "cert"], ["Aktie direkt", "Kurswert plus Dividenden nach Steuern", r.stock, ""], ["Aktie mit Put", "Put am Startkurs, Kosten 13.6\u00a0%", r.put, ""], ["Festgeld", "0.25\u00a0% pro Jahr, Zins versteuert", r.cash, ""]];
+  const best = items.reduce((a, b) => b[2] > a[2] ? b : a);
+  const mx = Math.max(...items.map(i => i[2]), r.N) * 1.06;
+  $("bars").innerHTML = items.map(([n, d, v, cls]) => `<div class="bar ${cls} ${n === best[0] ? "best" : ""}"><span class="name">${n}<small>${d}</small></span><b>${chf(v)}</b><div class="track"><div class="fill" style="width:${(v / mx * 100).toFixed(2)}%"></div><div class="need" style="left:${(r.N / mx * 100).toFixed(2)}%"></div></div></div>`).join("");
+  const d = r.cert - r.stock;
+  $("cmpnote").textContent = d >= 0 ? `Das Zertifikat liegt ${chf(d)} vor der Aktie nach Steuern.` : `Die Aktie nach Steuern liegt ${chf(-d)} vor dem Zertifikat.`;
+}
+
+/* ---------- 2 Barriere ---------- */
+const NW = 104;
+function shapePath(keys, seed){ const p = new Array(NW + 1);
+  for (let i = 0; i <= NW; i++){ const t = i / NW; let k = 0; while (k < keys.length - 2 && t > keys[k + 1][0]) k++;
+    const [t0, v0] = keys[k], [t1, v1] = keys[k + 1], u = Math.min(Math.max((t - t0) / (t1 - t0), 0), 1); p[i] = v0 + (v1 - v0) * (0.5 - 0.5 * Math.cos(Math.PI * u)); }
+  const rnd = mulberry32(seed); for (let i = 1; i < NW; i++) p[i] *= 1 + (rnd() - 0.5) * 0.03;
+  p[0] = 1; p[NW] = keys[keys.length - 1][1]; return p; }
+const PATH_A = shapePath([[0, 1], [.2, .95], [.45, .83], [.7, .96], [1, .90]], 11);
+const PATH_B = shapePath([[0, 1], [.18, .96], [.42, .72], [.62, .85], [.82, .94], [1, .90]], 23);
+function pathInfo(p){ let mn = Infinity, mi = 0; p.forEach((v, i) => { if (v < mn) { mn = v; mi = i; } }); const x = p[NW], hit = mn <= P.BAR; return { mn, mi, x, hit, pay: payoff(x, hit) }; }
+function drawPaths(svg, paths, opts){
+  const o = { x0: 0, x1: NW, y0: opts.y0 || 0.6, y1: opts.y1 || 1.2, L: 46 }, f = frame(svg, o);
+  let s = `<rect x="${f.L}" y="${f.my(P.BAR)}" width="${f.W - f.L - f.R}" height="${f.my(o.y0) - f.my(P.BAR)}" fill="${css("--redlt")}"/>`;
+  const stp = (o.y1 - o.y0) * S0 > 400 ? 100 : 50, yt = []; for (let c = Math.ceil(o.y0 * S0 / stp) * stp; c <= o.y1 * S0 + 1e-9; c += stp) yt.push(c / S0);
+  s += axes(f, { yt, yf: v => Math.round(S0 * v), xt: [0, 26, 52, 78, 104], xf: v => ["Okt 26", "Apr 27", "Okt 27", "Apr 28", "Okt 28"][v / 26], xl: opts.xl || "Kurs Zurich in CHF, wöchentlich" });
+  s += `<line x1="${f.L}" x2="${f.W - f.R}" y1="${f.my(1)}" y2="${f.my(1)}" stroke="${css("--muted")}" stroke-opacity=".6"/>`;
+  s += `<line x1="${f.L}" x2="${f.W - f.R}" y1="${f.my(P.BAR)}" y2="${f.my(P.BAR)}" stroke="${css("--red")}" stroke-dasharray="6 4" stroke-width="1.5"/>`;
+  paths.forEach(([p, col, w]) => { const cl = v => Math.min(Math.max(v, o.y0), o.y1);
+    s += `<polyline fill="none" stroke="${col}" stroke-width="${w}" stroke-linejoin="round" points="${p.map((v, i) => `${f.mx(i).toFixed(1)},${f.my(cl(v)).toFixed(1)}`).join(" ")}"/>`;
+    const inf = pathInfo(p); if (inf.hit){ const fi = p.findIndex(v => v <= P.BAR); s += `<circle cx="${f.mx(fi)}" cy="${f.my(cl(p[fi]))}" r="6" fill="${css("--red")}" stroke="#fff" stroke-width="2"/>`; }
+    s += `<circle cx="${f.mx(NW)}" cy="${f.my(cl(p[NW]))}" r="5.5" fill="${css("--gold")}" stroke="${col}" stroke-width="2"/>`; });
+  s += `<text x="${f.W - f.R - 4}" y="${f.my(P.BAR) + 14}" text-anchor="end" class="lbl" fill="${css("--red")}">Barriere 441.15</text>`;
+  s += `<text x="${f.W - f.R - 4}" y="${f.my(1) - 5}" text-anchor="end" class="lbl" fill="${css("--muted")}">Startkurs 588.20</text>`;
+  svg.innerHTML = s; return f;
+}
+function render2(){ if (!$("d-barrier").open) return;
+  drawPaths($("ch2"), [[PATH_A, css("--navy"), 3], [PATH_B, css("--red"), 3]], { y0: 0.6, y1: 1.15 });
+  const a = pathInfo(PATH_A), b = pathInfo(PATH_B), N = nominal();
+  $("pa").textContent = `${pct(a.pay * 100)} · ${chf(a.pay * N)}`; $("pat").textContent = `Tiefster Kurs ${chf(S0 * a.mn, 2)}, Schlusskurs ${chf(S0 * a.x, 2)} (−10\u00a0%). Die Barriere hält, Sie erhalten 100\u00a0% zurück.`;
+  $("pb").textContent = `${pct(b.pay * 100)} · ${chf(b.pay * N)}`; $("pbt").textContent = `Tiefster Kurs ${chf(S0 * b.mn, 2)}, Schlusskurs ${chf(S0 * b.x, 2)} (−10\u00a0%). Die Barriere wurde berührt, Sie erhalten den Kurswert.`;
+}
+/* eigener Verlauf */
+(function initOwn(){
+  st.own = PATH_A.slice(); const svg = $("ch2b"); let drawing = false, last = null;
+  const toPt = e => { const f = svg._f; if (!f) return null; const bb = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal; const sx = (e.clientX - bb.left) / bb.width * vb.width, sy = (e.clientY - bb.top) / bb.height * vb.height;
+    const i = Math.round((sx - f.L) / (f.W - f.L - f.R) * NW), y = f.o.y0 + (f.H - f.B - sy) / (f.H - f.T - f.B) * (f.o.y1 - f.o.y0); return [Math.min(Math.max(i, 1), NW), Math.min(Math.max(y, f.o.y0), f.o.y1)]; };
+  svg.style.touchAction = "none";
+  svg.addEventListener("pointerdown", e => { drawing = true; svg.setPointerCapture(e.pointerId); last = toPt(e); if (last) { st.own[last[0]] = last[1]; renderOwn(); } });
+  svg.addEventListener("pointermove", e => { if (!drawing) return; const p = toPt(e); if (!p) return; if (last) { const [i0, y0] = last, [i1, y1] = p, n = Math.abs(i1 - i0); for (let k = 0; k <= n; k++){ const i = i0 + Math.sign(i1 - i0) * k; st.own[i] = n ? y0 + (y1 - y0) * k / n : y1; } } last = p; renderOwn(); });
+  ["pointerup", "pointercancel"].forEach(ev => svg.addEventListener(ev, () => { drawing = false; last = null; }));
+  $("ownreset").onclick = () => { st.own = PATH_A.slice(); renderOwn(); };
+  $("d-own").addEventListener("toggle", renderOwn);
+  $("d-barrier").addEventListener("toggle", () => { render2(); renderOwn(); });
+})();
+function renderOwn(){ if (!$("d-own").open) return; const svg = $("ch2b"); svg._f = drawPaths(svg, [[st.own, css("--navy"), 3]], { y0: 0.4, y1: 1.6, xl: "Ziehen Sie im Diagramm, um den Verlauf zu ändern" });
+  const i = pathInfo(st.own), N = nominal();
+  $("ownres").innerHTML = `<span>Tiefster Kurs <b>${chf(S0 * i.mn, 2)}</b></span><span>Schlusskurs <b>${chf(S0 * i.x, 2)} (${spct((i.x - 1) * 100)})</b></span><span>Barriere <b style="color:${i.hit ? css("--red") : "inherit"}">${i.hit ? "berührt" : "nie berührt"}</b></span><span>Rückzahlung <b>${pct(i.pay * 100)} · ${chf(i.pay * N)}</b></span>`; }
+
+/* ---------- 4 Wert vor Verfall ---------- */
+(function init4(){ $("day").value = st.day; $("day").oninput = e => { st.day = +e.target.value; render4(); }; $("spot").oninput = e => { st.spot = +e.target.value; render4(); }; $("d-value").addEventListener("toggle", render4); })();
+function render4(){ if (!$("d-value").open) return;
+  const d = new Date(START.getTime() + st.day * 864e5), Trem = Math.max(0, (END - d) / 864e5 / 365), x = st.spot / S0, N = nominal();
+  $("dayo").textContent = d.toLocaleDateString("de-CH", { day: "2-digit", month: "2-digit", year: "numeric" }); $("spoto").textContent = `${chf(st.spot, 2)} (${spct((x - 1) * 100, 1)})`;
+  const fv = fairValue(x, Trem), mat = payoff(x, false);
+  $("vchf").textContent = chf(fv * N); $("vpct").textContent = `${pct(fv * 100)} des Nominals, Restlaufzeit ${Trem.toFixed(2)} Jahre`;
+  $("vbid").textContent = x <= P.BAR ? "Kurs auf oder unter der Barriere: der Schutz ist entfallen." : `Geldkurs der Emittentin, Annahme 0.5\u00a0% darunter: ${chf(fv * 0.995 * N)}`;
+  $("vstock").textContent = `Aktie zum gleichen Kurs: ${pct(x * 100)}, ${chf(x * N)}`;
+  $("vmat").textContent = Trem > 0.01 ? `Bei Verfall zum gleichen Kurs, Barriere nie berührt: ${pct(mat * 100)}, ${chf(mat * N)}` : "";
+  const svg = $("ch4"), f = frame(svg, { x0: 60, x1: 160, y0: 50, y1: 175, L: 44 });
+  let s = `<rect x="${f.mx(75)}" y="${f.T}" width="${f.mx(100) - f.mx(75)}" height="${f.H - f.T - f.B}" fill="${css("--goldlt")}"/>`;
+  s += axes(f, { yt: [60, 80, 100, 120, 140, 160], yf: v => v + " %", xt: [60, 75, 100, 130, 160], xf: v => v + " %", xl: "Kurs Zurich in % des Startkurses" });
+  s += poly(f, v => v, 60, 160, 1, css("--grey"), 2, "6 5");
+  s += poly(f, v => Math.min(fairValue(v / 100, 0), 1.75) * 100, 60, 160, 0.5, css("--ink"), 2, "6 4");
+  s += poly(f, v => Math.min(fairValue(v / 100, Trem), 1.75) * 100, 60, 160, 1, css("--navy"), 3.5);
+  s += `<circle cx="${f.mx(x * 100)}" cy="${f.my(Math.min(fv, 1.75) * 100)}" r="7" fill="${css("--gold")}" stroke="${css("--navy")}" stroke-width="2"/>`;
+  svg.innerHTML = s; }
+
+/* ---------- 5 Kosten ---------- */
+(function renderCost(){ const lo = 500, hi = 600, span = hi - lo; let cum = 0;
+  const rows = P.BUILD.map(([n, v], i) => { const from = i === 0 ? lo : cum; cum += v; return `<div class="row ${i === 0 ? "base" : ""}"><span>${n}</span><b>${i === 0 ? "" : "+ "}${fmtN(v, 2)}</b><div class="track"><div class="fill" style="left:${((from - lo) / span * 100).toFixed(2)}%;width:${((cum - from) / span * 100).toFixed(2)}%"></div></div></div>`; });
+  rows.push(`<div class="row total"><span>Emissionspreis je Zertifikat</span><b>CHF ${fmtN(cum, 2)}</b><div class="track"><div class="fill" style="left:0;width:${((cum - lo) / span * 100).toFixed(2)}%"></div></div></div>`);
+  $("wf").innerHTML = rows.join(""); })();
+
+/* ---------- 6 Live-Rechnung ---------- */
+function renderSteps(){ const r = current(), x = r.x, up = x >= 1; const cls = (!up && r.hit) ? " hit" : "";
+  const k1 = `Zurich schliesst am 12.10.2028 bei <b>${chf(S0 * x, 2)}</b>, das sind ${pct(x * 100)} des Startkurses von CHF 588.20.`;
+  let k2, k3;
+  if (x >= P.CAP) { k2 = `Zurich liegt über dem Cap von 130\u00a0%. Es gilt der Höchstbetrag: <b>163.1\u00a0%</b> des Nominals.`; }
+  else if (up) { k2 = `Zurich liegt ${spct((x - 1) * 100, 1)} über dem Startkurs. Sie erhalten 100\u00a0% plus 210.2\u00a0% dieses Anstiegs: 210.2\u00a0% × ${pct((x - 1) * 100)} = ${pct((r.p - 1) * 100)}, zusammen <b>${pct(r.p * 100)}</b>.${r.hit ? " Eine Barrierenberührung spielt über dem Startkurs keine Rolle." : ""}`; }
+  else if (!r.hit) { k2 = `Zurich liegt ${pct((1 - x) * 100)} unter dem Startkurs, die Barriere von CHF 441.15 wurde aber nie berührt. Der Schutz greift: <b>100\u00a0%</b> des Nominals.`; }
+  else { k2 = `Zurich liegt unter dem Startkurs und die Barriere wurde berührt. Der Schutz ist weg, Sie erhalten den Kurswert: <b>${pct(x * 100)}</b> des Nominals.`; }
+  k3 = `${pct(r.p * 100)} von CHF 588.20 sind <b>${chf(S0 * r.p, 2)}</b> je Zertifikat. Für Ihre ${fmtN(st.n)} Zertifikate: <b>${chf(r.cert)}</b>.`;
+  $("steps").innerHTML = [["Wo steht Zurich bei Verfall?", k1, ""], ["Welche Regel gilt?", k2, cls], ["Was erhalten Sie?", k3, cls]].map(([h, t, c], i) => `<div class="step${c}"><span class="n" aria-hidden="true">${i + 1}</span><div><h4>${h}</h4><p class="num">${t}</p></div></div>`).join(""); }
+function renderLive(){ renderSteps(); const r = current(), x = r.x, N = r.N; let s = `<var>x</var> = ${chf(S0 * x, 2)} ÷ CHF 588.20 = <b>${x.toFixed(3)}</b><br>`;
+  if (x >= 1) s += `<var>x</var> ≥ 1: 100\u00a0% + 210.2\u00a0% × (min(${x.toFixed(3)}; 1.30) − 1) = 100\u00a0% + 210.2\u00a0% × ${(Math.min(x, P.CAP) - 1).toFixed(3)} = <b>${pct(r.p * 100)}</b>${r.hit ? " (die Barrierenberührung spielt über dem Startkurs keine Rolle)" : ""}`;
+  else if (!r.hit) s += `<var>x</var> &lt; 1 und Barriere nie berührt: Rückzahlung <b>100\u00a0%</b>`;
+  else s += `<var>x</var> &lt; 1 und Barriere berührt: Rückzahlung = <var>x</var> = <b>${pct(x * 100)}</b>`;
+  s += `<br>Je Zertifikat: ${pct(r.p * 100)} × CHF 588.20 = <b>${chf(S0 * r.p, 2)}</b><br>Für ${fmtN(st.n)} Zertifikate: <b>${chf(r.cert)}</b>`;
+  $("live").innerHTML = s; }
+$("d-formula").addEventListener("toggle", renderLive);
+
+/* ---------- Steuerung ---------- */
+function renderAll(){ renderSettings(); render1(); render2(); render4(); renderLive(); renderOwn(); }
+renderAll();
+let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { render1(); render2(); render4(); renderOwn(); }, 120); });
+</script>
+</body>
+</html>
